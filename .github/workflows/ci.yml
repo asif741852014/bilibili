@@ -32,7 +32,3 @@ jobs:
 
       - name: Install Dependencies
         run: npm install
-        if: steps.cache-npm.outputs.cache-hit != 'true'
-
-      - name: Build Project
-        run: npm run build
