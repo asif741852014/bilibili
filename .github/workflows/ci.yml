@@ -1,0 +1,38 @@
+name: Cache npm Cache Directory
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@v2
+
+      - name: Set Up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Restore npm Cache
+        id: cache-npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm  # Caching npm's package cache directory
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
+
+      - name: Install Dependencies
+        run: npm install
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+
+      - name: Build Project
+        run: npm run build
